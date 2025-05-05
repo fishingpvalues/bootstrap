@@ -493,8 +493,11 @@ install_alpine() {
     unzip \
     jq
 
-  # thefuck is not in Alpine repos; install via pip
-  sudo pip3 install thefuck
+  # thefuck is not in Alpine repos; install via pip (PEP 668 workaround)
+  if ! pip3 install --user thefuck; then
+    print_color "YELLOW" "pip user install failed, trying with --break-system-packages (PEP 668 workaround)"
+    pip3 install --break-system-packages thefuck || print_color "RED" "Failed to install thefuck. Please install manually if needed."
+  fi
 
   # Nerd Fonts are not in Alpine repos; must be installed manually or via custom script
   # ttf-fira-code-nerd and ttf-meslo-nerd are unavailable on Alpine
