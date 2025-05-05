@@ -462,6 +462,84 @@ EOL
   print_color "GREEN" "Debian/Ubuntu setup completed!"
 }
 
+# ALPINE LINUX INSTALLATION
+install_alpine() {
+  print_color "BLUE" "Setting up Alpine Linux environment..."
+
+  # Update and install essential packages
+  sudo apk update
+  sudo apk add --no-cache \
+    bash \
+    curl \
+    wget \
+    git \
+    zsh \
+    neovim \
+    python3 \
+    py3-pip \
+    py3-virtualenv \
+    thefuck \
+    fzf \
+    ripgrep \
+    fd \
+    bat \
+    htop \
+    tmux \
+    docker \
+    lnav \
+    gcc \
+    g++ \
+    make \
+    cmake \
+    openssl-dev \
+    pkgconf \
+    cargo \
+    just \
+    unzip \
+    ncurses \
+    shadow \
+    fontconfig \
+    ttf-fira-code-nerd \
+    ttf-meslo-nerd
+
+  # Add user to docker group
+  if getent group docker &>/dev/null; then
+    sudo usermod -aG docker $USER
+    print_color "YELLOW" "Added user to docker group. You may need to log out and back in for this to take effect."
+  fi
+
+  # Install Python tools
+  print_color "YELLOW" "Installing Python development tools..."
+  pip3 install --user --upgrade uv ruff pyright pdoc commitizen pre-commit just
+
+  # Install Rust
+  if ! command -v rustup &>/dev/null; then
+    print_color "YELLOW" "Installing Rust..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  fi
+
+  # Install yazi file manager
+  if ! command -v yazi &>/dev/null; then
+    print_color "YELLOW" "Installing Yazi file manager..."
+    cargo install yazi
+  fi
+
+  # Install macchina
+  if ! command -v macchina &>/dev/null; then
+    print_color "YELLOW" "Installing macchina..."
+    cargo install macchina
+  fi
+
+  # Install chezmoi
+  if ! command -v chezmoi &>/dev/null; then
+    print_color "YELLOW" "Installing chezmoi..."
+    sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
+    export PATH="$PATH:$HOME/.local/bin"
+  fi
+
+  print_color "GREEN" "Alpine Linux setup completed!"
+}
+
 # Install Oh My Zsh if not already installed
 install_oh_my_zsh() {
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -471,10 +549,8 @@ install_oh_my_zsh() {
     print_color "GREEN" "Oh My Zsh already installed."
   fi
 
-  # Install zsh plugins and themes
-  # Ensure ZSH_CUSTOM is defined; if not, set a default location
   ZSH_CUSTOM=${ZSH_CUSTOM:-"$HOME/.oh-my-zsh/custom"}
-  
+
   # Install Powerlevel10k theme
   if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
     print_color "YELLOW" "Installing Powerlevel10k theme..."
@@ -482,75 +558,63 @@ install_oh_my_zsh() {
   else
     print_color "GREEN" "Powerlevel10k theme already installed."
   fi
-  
-  # Plugins
+
   print_color "BLUE" "Installing Oh My Zsh plugins..."
-  
-  # zsh-autosuggestions - faster completion suggestions
+
   if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
     print_color "YELLOW" "Installing zsh-autosuggestions..."
     git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
   fi
-
-  # fast-syntax-highlighting - faster than zsh-syntax-highlighting
   if [ ! -d "$ZSH_CUSTOM/plugins/fast-syntax-highlighting" ]; then
     print_color "YELLOW" "Installing fast-syntax-highlighting..."
     git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "$ZSH_CUSTOM/plugins/fast-syntax-highlighting"
   fi
-  
-  # fzf plugin for Oh My Zsh
   if [ ! -d "$ZSH_CUSTOM/plugins/fzf" ]; then
     print_color "YELLOW" "Installing fzf plugin..."
     git clone https://github.com/unixorn/fzf-zsh-plugin.git "$ZSH_CUSTOM/plugins/fzf"
   fi
-
-  # history-substring-search
   if [ ! -d "$ZSH_CUSTOM/plugins/history-substring-search" ]; then
     print_color "YELLOW" "Installing history-substring-search..."
     git clone https://github.com/zsh-users/zsh-history-substring-search.git "$ZSH_CUSTOM/plugins/history-substring-search"
   fi
-  
-  # zsh-interactive-cd for better directory navigation
   if [ ! -d "$ZSH_CUSTOM/plugins/zsh-interactive-cd" ]; then
     print_color "YELLOW" "Installing zsh-interactive-cd..."
     git clone https://github.com/changyuheng/zsh-interactive-cd.git "$ZSH_CUSTOM/plugins/zsh-interactive-cd"
   fi
-  
+
   # Install autojump for fast directory navigation
   if ! command -v autojump &>/dev/null; then
     print_color "YELLOW" "Installing autojump..."
     if [[ "$OS" == "Darwin" ]]; then
       brew install autojump
+    elif command -v apk &>/dev/null; then
+      sudo apk add --no-cache autojump
+    elif command -v apt-get &>/dev/null; then
+      sudo apt-get install -y autojump
+    elif command -v pacman &>/dev/null; then
+      sudo pacman -S --noconfirm autojump
+    elif command -v dnf &>/dev/null; then
+      sudo dnf install -y autojump
     else
-      # Linux installation
-      if command -v apt-get &>/dev/null; then
-        sudo apt-get install -y autojump
-      elif command -v pacman &>/dev/null; then
-        sudo pacman -S --noconfirm autojump
-      elif command -v dnf &>/dev/null; then
-        sudo dnf install -y autojump
-      else
-        print_color "RED" "Could not install autojump. Please install it manually."
-      fi
+      print_color "RED" "Could not install autojump. Please install it manually."
     fi
   fi
-  
+
   # direnv integration
   if ! command -v direnv &>/dev/null; then
     print_color "YELLOW" "Installing direnv..."
     if [[ "$OS" == "Darwin" ]]; then
       brew install direnv
+    elif command -v apk &>/dev/null; then
+      sudo apk add --no-cache direnv
+    elif command -v apt-get &>/dev/null; then
+      sudo apt-get install -y direnv
+    elif command -v pacman &>/dev/null; then
+      sudo pacman -S --noconfirm direnv
+    elif command -v dnf &>/dev/null; then
+      sudo dnf install -y direnv
     else
-      # Linux installation
-      if command -v apt-get &>/dev/null; then
-        sudo apt-get install -y direnv
-      elif command -v pacman &>/dev/null; then
-        sudo pacman -S --noconfirm direnv
-      elif command -v dnf &>/dev/null; then
-        sudo dnf install -y direnv
-      else
-        print_color "RED" "Could not install direnv. Please install it manually."
-      fi
+      print_color "RED" "Could not install direnv. Please install it manually."
     fi
   fi
 
@@ -559,45 +623,40 @@ install_oh_my_zsh() {
     print_color "YELLOW" "Installing fd..."
     if [[ "$OS" == "Darwin" ]]; then
       brew install fd
-    else
-      if command -v apt-get &>/dev/null; then
-        sudo apt-get install -y fd-find
-        # Create symlink for fd on Debian-based systems
-        if ! command -v fd &>/dev/null && command -v fdfind &>/dev/null; then
-          sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
-        fi
-      elif command -v pacman &>/dev/null; then
-        sudo pacman -S --noconfirm fd
-      elif command -v dnf &>/dev/null; then
-        sudo dnf install -y fd-find
-      else
-        print_color "RED" "Could not install fd. Please install it manually."
+    elif command -v apk &>/dev/null; then
+      sudo apk add --no-cache fd
+    elif command -v apt-get &>/dev/null; then
+      sudo apt-get install -y fd-find
+      if ! command -v fd &>/dev/null && command -v fdfind &>/dev/null; then
+        sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
       fi
+    elif command -v pacman &>/dev/null; then
+      sudo pacman -S --noconfirm fd
+    elif command -v dnf &>/dev/null; then
+      sudo dnf install -y fd-find
+    else
+      print_color "RED" "Could not install fd. Please install it manually."
     fi
   fi
-  
   if ! command -v fzf &>/dev/null; then
     print_color "YELLOW" "Installing fzf..."
     if [[ "$OS" == "Darwin" ]]; then
       brew install fzf
-      # Install useful key bindings and fuzzy completion
       $(brew --prefix)/opt/fzf/install --all --no-update-rc
+    elif command -v apk &>/dev/null; then
+      sudo apk add --no-cache fzf
     else
-      # Linux installation
       if [ ! -d "$HOME/.fzf" ]; then
         git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
         "$HOME/.fzf/install" --all --no-update-rc
       fi
     fi
   fi
-  
-  # Copy p10k config file
   if [ -f "$DOTFILES_DIR/config/zsh/p10k.zsh" ]; then
     print_color "YELLOW" "Copying Powerlevel10k configuration..."
     cp -f "$DOTFILES_DIR/config/zsh/p10k.zsh" "$HOME/.p10k.zsh"
     print_color "GREEN" "Powerlevel10k configuration copied successfully."
   fi
-  
   print_color "GREEN" "Oh My Zsh plugins setup complete."
 }
 
@@ -757,16 +816,16 @@ main() {
     install_macos
   elif [[ "$OS" == "Linux" ]]; then
     print_color "BLUE" "Detected Linux system"
-    
-    # If it's Arch Linux, use Makefile instead
-    if command -v pacman &> /dev/null; then
+    if command -v apk &> /dev/null; then
+      print_color "YELLOW" "Alpine Linux detected"
+      install_alpine
+    elif command -v pacman &> /dev/null; then
       if [ -f "$DOTFILES_DIR/Makefile" ];then
         print_color "YELLOW" "Arch Linux detected, using Makefile for installation"
         cd "$DOTFILES_DIR" && make install
         exit 0
       fi
     else
-      # Assume Debian/Ubuntu-based
       install_debian
     fi
   else
