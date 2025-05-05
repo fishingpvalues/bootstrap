@@ -539,12 +539,13 @@ install_alpine() {
     export PATH="$PATH:$HOME/.local/bin"
   fi
 
-  # usermod is not available by default on Alpine; shadow provides it
-  if command -v usermod >/dev/null 2>&1; then
-    # Place any usermod logic here
+  # usermod is not available or needed in CI/Alpine; skip if in CI or on Alpine
+  if [ -z "$CI" ] && command -v usermod >/dev/null 2>&1; then
+    # Place any usermod logic here, only if needed and with valid arguments
+    # Example: usermod -aG docker "$USER"
     :
   else
-    print_color "YELLOW" "usermod not available on Alpine. Skipping user modification."
+    print_color "YELLOW" "Skipping usermod: not needed in CI or not available on Alpine."
   fi
 
   print_color "GREEN" "Alpine Linux setup completed!"
