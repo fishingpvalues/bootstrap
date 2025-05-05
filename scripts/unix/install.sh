@@ -81,7 +81,6 @@ install_macos() {
     neovim \
     wget \
     curl \
-    thefuck \
     zsh \
     nushell \
     btop \
@@ -113,7 +112,8 @@ install_macos() {
     yt-dlp \
     miniforge \
     chezmoi
-    
+  # thefuck is optional; not installed by default. If needed, install manually via pip or brew.
+  
   # Configure Miniforge to use .conda/envs directory
   CONDA_ENV_DIR="$HOME/.conda/envs"
   mkdir -p "$CONDA_ENV_DIR"
@@ -299,7 +299,6 @@ install_debian() {
     python3-dev \
     python3-pip \
     python3-venv \
-    thefuck \
     zsh \
     fzf \
     ripgrep \
@@ -323,7 +322,8 @@ install_debian() {
     cmake \
     gcc \
     g++
-    
+  # thefuck is optional; not installed by default. If needed, install manually via pip or apt.
+  
   # Create symbolic links for differently named packages
   if command -v fdfind &>/dev/null && ! command -v fd &>/dev/null; then
     sudo ln -sf $(which fdfind) /usr/local/bin/fd
@@ -491,13 +491,14 @@ install_alpine() {
     ncurses \
     less \
     unzip \
-    jq
+    jq \
+    gcc \
+    musl-dev \
+    linux-headers \
+    shadow
 
-  # thefuck is not in Alpine repos; install via pip (PEP 668 workaround)
-  if ! pip3 install --user thefuck; then
-    print_color "YELLOW" "pip user install failed, trying with --break-system-packages (PEP 668 workaround)"
-    pip3 install --break-system-packages thefuck || print_color "RED" "Failed to install thefuck. Please install manually if needed."
-  fi
+  # thefuck is optional; not installed by default. If needed, install manually via pip or package manager.
+  print_color "YELLOW" "Skipping installation of 'thefuck' on Alpine. If needed, install manually via pip or apk if available."
 
   # Nerd Fonts are not in Alpine repos; must be installed manually or via custom script
   # ttf-fira-code-nerd and ttf-meslo-nerd are unavailable on Alpine
@@ -536,6 +537,14 @@ install_alpine() {
     print_color "YELLOW" "Installing chezmoi..."
     sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
     export PATH="$PATH:$HOME/.local/bin"
+  fi
+
+  # usermod is not available by default on Alpine; shadow provides it
+  if command -v usermod >/dev/null 2>&1; then
+    # Place any usermod logic here
+    :
+  else
+    print_color "YELLOW" "usermod not available on Alpine. Skipping user modification."
   fi
 
   print_color "GREEN" "Alpine Linux setup completed!"
