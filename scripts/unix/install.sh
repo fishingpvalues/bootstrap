@@ -478,7 +478,6 @@ install_alpine() {
     python3 \
     py3-pip \
     py3-virtualenv \
-    thefuck \
     fzf \
     ripgrep \
     fd \
@@ -486,21 +485,20 @@ install_alpine() {
     htop \
     tmux \
     docker \
-    lnav \
-    gcc \
-    g++ \
-    make \
-    cmake \
-    openssl-dev \
-    pkgconf \
-    cargo \
-    just \
-    unzip \
+    tree \
+    openssh \
+    sudo \
     ncurses \
-    shadow \
-    fontconfig \
-    ttf-fira-code-nerd \
-    ttf-meslo-nerd
+    less \
+    unzip \
+    jq
+
+  # thefuck is not in Alpine repos; install via pip
+  sudo pip3 install thefuck
+
+  # Nerd Fonts are not in Alpine repos; must be installed manually or via custom script
+  # ttf-fira-code-nerd and ttf-meslo-nerd are unavailable on Alpine
+  print_color "YELLOW" "Nerd Fonts are not available in Alpine repositories. Please install manually if needed."
 
   # Add user to docker group
   if getent group docker &>/dev/null; then
