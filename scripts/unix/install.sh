@@ -518,9 +518,12 @@ install_alpine() {
     print_color "YELLOW" "Skipping usermod: not needed in CI, not available, or running as root."
   fi
 
-  # Install Python tools
-  print_color "YELLOW" "Installing Python development tools..."
-  pip3 install --user --upgrade uv ruff pyright pdoc commitizen pre-commit just
+  # Install Python tools (PEP 668 workaround for Alpine/CI)
+  print_color "YELLOW" "Installing Python development tools (PEP 668 workaround)..."
+  if ! pip3 install --break-system-packages --user --upgrade uv ruff pyright pdoc commitizen pre-commit just; then
+    print_color "YELLOW" "pip3 install failed due to PEP 668 (externally managed environment). Skipping Python tool install. Install manually if needed."
+  fi
+  # See: https://peps.python.org/pep-0668/ and Alpine Linux Python packaging notes
 
   # Install Rust
   if ! command -v rustup &>/dev/null; then
