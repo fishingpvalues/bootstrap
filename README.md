@@ -78,6 +78,84 @@ chmod +x bootstrap/setup-chezmoi-arch.sh
 - When adding new install logic, place it in the appropriate subdirectory and update this README.
 - Keep scripts idempotent and safe to re-run.
 
+## CI/CD & Docker-Based Testing
+
+This repo uses advanced CI/CD automation to ensure reliability and cross-platform compatibility:
+
+- **GitHub Actions** automatically lint and test all bootstrap scripts on every push and pull request.
+- **Docker-based matrix testing** runs the main setup script in clean containers for:
+  - Ubuntu (latest)
+  - Fedora (latest)
+  - Alpine (latest)
+- **Idempotency check:** The main install script is run twice in a row to ensure it is safe to re-run.
+- **Shell linting:** All `.sh` scripts are checked with `shellcheck`.
+- **PowerShell linting:** `.ps1` scripts are checked on Windows runners.
+
+This ensures your bootstrap logic works in real-world, clean environments and is safe for all contributors and users.
+
+## Advanced CI/CD Features
+
+- **Secrets Integration:**
+  - CI workflows can securely use secrets (e.g., API keys, tokens) via GitHub Actions secrets. Example: `MY_SECRET` is available to scripts as an environment variable.
+- **Deployment Automation:**
+  - On every push to `main`, an automated GitHub Release is created with the latest scripts. This can be extended to publish artifacts or documentation.
+- **Advanced Test Scenarios:**
+  - CI checks for expected files and output after running bootstrap scripts.
+  - Idempotency is tested by running install scripts twice in a row.
+  - Output is validated for success messages.
+
+These enhancements ensure your bootstrap logic is secure, robust, and ready for real-world use and collaboration.
+
+## Cloning as a Submodule
+
+If you cloned the main dotfiles repository without submodules, run:
+
+```sh
+git submodule update --init --recursive
+```
+
+## Automated Testing Framework
+
+This repository includes a robust, cross-platform testing framework to ensure all setup scripts, dotfiles, and functions work as expected on all supported platforms (Linux, macOS, Windows).
+
+### How It Works
+
+- **Docker-based matrix testing** for Ubuntu, Fedora, Arch, and Alpine Linux using Dockerfiles in `test/`.
+- **GitHub Actions CI** runs all tests on every push and pull request, including:
+  - All Linux Docker containers
+  - macOS runner
+  - Windows runner
+- **Test scripts** (`test/test.sh`, `test/test.ps1`) source all shell profiles and run all key functions/aliases, checking for errors and expected output.
+- **Idempotency**: Install scripts are run multiple times to ensure re-runs are safe.
+
+### Running Tests Locally
+
+#### Linux (Docker required)
+
+```sh
+./test/run-all.sh
+```
+
+#### macOS
+
+```sh
+./test/test.sh
+```
+
+#### Windows (PowerShell)
+
+```powershell
+./test/test.ps1
+```
+
+### In CI
+
+- All tests run automatically via `.github/workflows/test-dotfiles.yml`.
+
+### Refreshing All READMEs
+
+To keep documentation up to date after changes, scan the root directory for all `README*.md` files and update them with any new features, scripts, or test instructions. You can automate this with a script or manually review and update each README as needed.
+
 ---
 
 For more details, see the main [README.md](../README.md) and OS-specific guides.
