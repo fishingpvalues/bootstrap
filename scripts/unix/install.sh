@@ -334,9 +334,13 @@ install_debian() {
   fi
   
   # Setup Docker permissions
-  if getent group docker &>/dev/null; then
-    sudo usermod -aG docker $USER
-    print_color "YELLOW" "Added user to docker group. You may need to log out and back in for this to take effect."
+  if [ -z "$CI" ] && command -v usermod >/dev/null 2>&1 && [ -n "$USER" ] && [ "$USER" != "root" ]; then
+    if getent group docker &>/dev/null; then
+      sudo usermod -aG docker $USER
+      print_color "YELLOW" "Added user $USER to docker group. You may need to log out and back in for this to take effect."
+    fi
+  else
+    print_color "YELLOW" "Skipping usermod: not needed in CI, not available, or running as root."
   fi
   
   # Install and setup nushell
@@ -504,10 +508,14 @@ install_alpine() {
   # ttf-fira-code-nerd and ttf-meslo-nerd are unavailable on Alpine
   print_color "YELLOW" "Nerd Fonts are not available in Alpine repositories. Please install manually if needed."
 
-  # Add user to docker group
-  if getent group docker &>/dev/null; then
-    sudo usermod -aG docker $USER
-    print_color "YELLOW" "Added user to docker group. You may need to log out and back in for this to take effect."
+  # Add user to docker group (skip in CI, if $USER is not set, or if running as root)
+  if [ -z "$CI" ] && command -v usermod >/dev/null 2>&1 && [ -n "$USER" ] && [ "$USER" != "root" ]; then
+    if getent group docker &>/dev/null; then
+      sudo usermod -aG docker $USER
+      print_color "YELLOW" "Added user $USER to docker group. You may need to log out and back in for this to take effect."
+    fi
+  else
+    print_color "YELLOW" "Skipping usermod: not needed in CI, not available, or running as root."
   fi
 
   # Install Python tools
