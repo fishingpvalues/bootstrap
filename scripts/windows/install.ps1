@@ -202,7 +202,6 @@ function Install-Packages {
             "neofetch",
             "aria2",
             "nushell",
-            "thefuck",
             "binwalk",
             "ncdu",
             "onefetch",
