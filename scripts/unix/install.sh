@@ -111,7 +111,26 @@ install_macos() {
     pinentry-mac \
     yt-dlp \
     miniforge \
-    chezmoi
+    chezmoi \
+    lsd \
+    dog \
+    duf \
+    dust \
+    glow \
+    httpie \
+    procs \
+    broot \
+    bottom \
+    as-tree \
+    dua-cli \
+    delta \
+    difftastic \
+    just \
+    atuin \
+    bandwhich \
+    hyperfine \
+    miniserve \
+    choose
   # thefuck is optional; not installed by default. If needed, install manually via pip or brew.
   
   # Configure Miniforge to use .conda/envs directory
@@ -270,7 +289,25 @@ install_debian() {
     curl \
     software-properties-common \
     gnupg \
-    lsb-release
+    lsb-release \
+    lsd \
+    duf \
+    dust \
+    glow \
+    httpie \
+    procs \
+    broot \
+    bottom \
+    as-tree \
+    dua-cli \
+    delta \
+    difftastic \
+    just \
+    atuin \
+    bandwhich \
+    hyperfine \
+    miniserve \
+    choose
   
   # Add important repositories
   
@@ -463,6 +500,22 @@ EOL
     export PATH="$PATH:$HOME/.local/bin"
   fi
 
+  # dog may need snap or cargo
+  if ! command -v dog &>/dev/null; then
+    if command -v snap &>/dev/null; then
+      sudo snap install dog
+    else
+      cargo install dog
+    fi
+  fi
+
+  # Fallback to cargo if not available
+  for tool in broot bottom as-tree dua-cli delta difftastic just atuin bandwhich hyperfine miniserve choose; do
+    if ! command -v $tool &>/dev/null; then
+      cargo install $tool
+    fi
+  done
+
   print_color "GREEN" "Debian/Ubuntu setup completed!"
 }
 
@@ -499,7 +552,25 @@ install_alpine() {
     gcc \
     musl-dev \
     linux-headers \
-    shadow
+    shadow \
+    lsd \
+    duf \
+    dust \
+    glow \
+    httpie \
+    procs \
+    broot \
+    bottom \
+    as-tree \
+    dua-cli \
+    delta \
+    difftastic \
+    just \
+    atuin \
+    bandwhich \
+    hyperfine \
+    miniserve \
+    choose
 
   # thefuck is optional; not installed by default. If needed, install manually via pip or package manager.
   print_color "YELLOW" "Skipping installation of 'thefuck' on Alpine. If needed, install manually via pip or apk if available."
@@ -558,6 +629,18 @@ install_alpine() {
   else
     print_color "YELLOW" "Skipping usermod: not needed in CI or not available on Alpine."
   fi
+
+  # dog may need cargo
+  if ! command -v dog &>/dev/null; then
+    cargo install dog
+  fi
+
+  # Fallback to cargo if not available
+  for tool in broot bottom as-tree dua-cli delta difftastic just atuin bandwhich hyperfine miniserve choose; do
+    if ! command -v $tool &>/dev/null; then
+      cargo install $tool
+    fi
+  done
 
   print_color "GREEN" "Alpine Linux setup completed!"
 }

@@ -207,19 +207,26 @@ function Install-Packages {
             "onefetch",
             "vhs", # Terminal GIF recorder
             "chezmoi",  # Add chezmoi to Scoop packages as a fallback
-            
-            # Languages and frameworks
-            "nim",
-            "go",
-            "terraform",
+            # Additional recommended tools
+            "lsd",
+            "duf",
+            "dust",
+            "glow",
+            "httpie",
+            "procs",
+            # Rust-powered modern tools
+            "broot",
+            "bottom",
+            "as-tree",
+            "dua-cli",
+            "delta",
+            "difftastic",
             "just",
-            
-            # Development tools
-            "llvm",
-            "make",
-            "cmake",
-            "gcc",
-            "ghidra"
+            "atuin",
+            "bandwhich",
+            "hyperfine",
+            "miniserve",
+            "choose"
         )
         
         foreach ($package in $scoopPackages) {
@@ -231,6 +238,32 @@ function Install-Packages {
         Write-Host "Installing Nerd Fonts..."
         scoop install FiraCode-NF
         scoop install MesloLGS-NF
+        
+        # dog: try scoop, else cargo
+        if (-not (Get-Command dog -ErrorAction SilentlyContinue)) {
+            try {
+                scoop install dog
+            } catch {
+                Write-Host "dog not available in Scoop, installing via cargo..."
+                if (Get-Command cargo -ErrorAction SilentlyContinue) {
+                    cargo install dog
+                } else {
+                    Write-Warning "cargo not found. Please install Rust/cargo to get dog."
+                }
+            }
+        }
+        # Fallback to cargo for Rust-powered tools if not available
+        $rustTools = @("broot","bottom","as-tree","dua-cli","delta","difftastic","just","atuin","bandwhich","hyperfine","miniserve","choose")
+        foreach ($tool in $rustTools) {
+            if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
+                if (Get-Command cargo -ErrorAction SilentlyContinue) {
+                    Write-Host "Installing $tool via cargo..."
+                    cargo install $tool
+                } else {
+                    Write-Warning "$tool not found and cargo not available. Please install Rust/cargo to get $tool."
+                }
+            }
+        }
     }
     
     # Install Python packages with pip
