@@ -226,7 +226,16 @@ function Install-Packages {
             "bandwhich",
             "hyperfine",
             "miniserve",
-            "choose"
+            "choose",
+            # New SOTA tools
+            "eza",
+            "vivid",
+            "sd",
+            "xh",
+            "gitui",
+            "ripgrep-all",
+            "bat-extras",
+            "onefetch"
         )
         
         foreach ($package in $scoopPackages) {
@@ -253,7 +262,7 @@ function Install-Packages {
             }
         }
         # Fallback to cargo for Rust-powered tools if not available
-        $rustTools = @("broot","bottom","as-tree","dua-cli","delta","difftastic","just","atuin","bandwhich","hyperfine","miniserve","choose")
+        $rustTools = @("broot","bottom","as-tree","dua-cli","delta","difftastic","just","atuin","bandwhich","hyperfine","miniserve","choose","eza","vivid","sd","xh","gitui","ripgrep-all","bat-extras","onefetch")
         foreach ($tool in $rustTools) {
             if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
                 if (Get-Command cargo -ErrorAction SilentlyContinue) {

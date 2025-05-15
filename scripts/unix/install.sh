@@ -130,7 +130,15 @@ install_macos() {
     bandwhich \
     hyperfine \
     miniserve \
-    choose
+    choose \
+    eza \
+    vivid \
+    sd \
+    xh \
+    gitui \
+    ripgrep-all \
+    bat-extras \
+    onefetch
   # thefuck is optional; not installed by default. If needed, install manually via pip or brew.
   
   # Configure Miniforge to use .conda/envs directory
@@ -307,7 +315,15 @@ install_debian() {
     bandwhich \
     hyperfine \
     miniserve \
-    choose
+    choose \
+    eza \
+    vivid \
+    sd \
+    xh \
+    gitui \
+    ripgrep-all \
+    bat-extras \
+    onefetch
   
   # Add important repositories
   
@@ -340,7 +356,6 @@ install_debian() {
     fzf \
     ripgrep \
     fd-find \
-    bat \
     htop \
     btop \
     tmux \
@@ -510,7 +525,7 @@ EOL
   fi
 
   # Fallback to cargo if not available
-  for tool in broot bottom as-tree dua-cli delta difftastic just atuin bandwhich hyperfine miniserve choose; do
+  for tool in broot bottom as-tree dua-cli delta difftastic just atuin bandwhich hyperfine miniserve choose eza vivid sd xh gitui ripgrep-all bat-extras onefetch; do
     if ! command -v $tool &>/dev/null; then
       cargo install $tool
     fi
@@ -570,7 +585,15 @@ install_alpine() {
     bandwhich \
     hyperfine \
     miniserve \
-    choose
+    choose \
+    eza \
+    vivid \
+    sd \
+    xh \
+    gitui \
+    ripgrep-all \
+    bat-extras \
+    onefetch
 
   # thefuck is optional; not installed by default. If needed, install manually via pip or package manager.
   print_color "YELLOW" "Skipping installation of 'thefuck' on Alpine. If needed, install manually via pip or apk if available."
@@ -636,7 +659,7 @@ install_alpine() {
   fi
 
   # Fallback to cargo if not available
-  for tool in broot bottom as-tree dua-cli delta difftastic just atuin bandwhich hyperfine miniserve choose; do
+  for tool in broot bottom as-tree dua-cli delta difftastic just atuin bandwhich hyperfine miniserve choose eza vivid sd xh gitui ripgrep-all bat-extras onefetch; do
     if ! command -v $tool &>/dev/null; then
       cargo install $tool
     fi
