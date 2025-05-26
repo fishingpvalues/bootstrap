@@ -1,17 +1,1 @@
-#!/usr/bin/env bash
-
-# Disable the all too sensitive backswipe on trackpads
-defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
-defaults write com.google.Chrome.canary AppleEnableSwipeNavigateWithScrolls -bool false
-
-# Disable the all too sensitive backswipe on Magic Mouse
-defaults write com.google.Chrome AppleEnableMouseSwipeNavigateWithScrolls -bool false
-defaults write com.google.Chrome.canary AppleEnableMouseSwipeNavigateWithScrolls -bool false
-
-# Use the system-native print preview dialog
-defaults write com.google.Chrome DisablePrintPreview -bool true
-defaults write com.google.Chrome.canary DisablePrintPreview -bool true
-
-# Expand the print dialog by default
-defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
-defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true 
+#!/usr/bin/env bash\n\n# Disable the all too sensitive backswipe on trackpads\ndefaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false\ndefaults write com.google.Chrome.canary AppleEnableSwipeNavigateWithScrolls -bool false\n\n# Disable the all too sensitive backswipe on Magic Mouse\ndefaults write com.google.Chrome AppleEnableMouseSwipeNavigateWithScrolls -bool false\ndefaults write com.google.Chrome.canary AppleEnableMouseSwipeNavigateWithScrolls -bool false\n\n# Use the system-native print preview dialog\ndefaults write com.google.Chrome DisablePrintPreview -bool true\ndefaults write com.google.Chrome.canary DisablePrintPreview -bool true\n\n# Expand the print dialog by default\ndefaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true\ndefaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true 
