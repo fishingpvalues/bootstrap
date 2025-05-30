@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# NOTE: This script is intended for use with chezmoi-managed dotfiles.
+# Do NOT manually symlink shell profiles if chezmoi is managing them.
+# All config/ references have been updated to dot_config/ for chezmoi compatibility.
+
 # --- Color Output ---
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -203,24 +207,27 @@ setup_oh_my_posh() {
     print_color YELLOW "[OMP] Installing Oh My Posh..."
     curl -s https://ohmyposh.dev/install.sh | bash -s
   fi
-  THEME_SRC="$DOTFILES_DIR/config/powershell/github-dark.omp.json"
+  THEME_SRC="$DOTFILES_DIR/dot_config/powershell/github-dark.omp.json"
   THEME_DEST="$OH_MY_POSH_DIR/github-dark.omp.json"
   if [ -f "$THEME_SRC" ]; then
     cp "$THEME_SRC" "$THEME_DEST"
     ln -sf "$THEME_DEST" "$OH_MY_POSH_DIR/current-theme.omp.json"
+  else
+    print_color YELLOW "[OMP] Theme source $THEME_SRC not found. Skipping theme copy."
   fi
 }
 
-# --- Symlink Shell Profiles ---
+# --- Symlink Shell Profiles (chezmoi manages these, so this is disabled) ---
 symlink_shell_profiles() {
-  DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
-  for shell in zsh bash; do
-    src="$DOTFILES_DIR/config/$shell/${shell}rc"
-    dest="$HOME/.${shell}rc"
-    if [ -f "$src" ]; then
-      ln -sf "$src" "$dest"
-    fi
-  done
+  print_color YELLOW "[chezmoi] Skipping manual symlinking of shell profiles. Chezmoi manages these files."
+  # DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
+  # for shell in zsh bash; do
+  #   src="$DOTFILES_DIR/dot_config/$shell/dot_${shell}rc"
+  #   dest="$HOME/.${shell}rc"
+  #   if [ -f "$src" ]; then
+  #     ln -sf "$src" "$dest"
+  #   fi
+  # done
 }
 
 # --- Make Scripts Executable ---
